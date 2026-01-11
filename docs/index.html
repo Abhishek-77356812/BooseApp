@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BooseApp API Documentation</title>
+  <style>
+    :root { --bg:#0b0f14; --panel:#111824; --text:#e6edf3; --muted:#93a4b5; --border:#263243; --link:#7aa2ff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
+    header { padding: 24px 16px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, #0e1420, #0b0f14); }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    .sub { color: var(--muted); font-size: 13px; }
+    .controls { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 14px; }
+    input[type="search"]{
+      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--panel); color: var(--text); outline: none;
+    }
+    button{
+      padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: #182233; color: var(--text); cursor: pointer;
+    }
+    button:hover { filter: brightness(1.08); }
+    main { padding: 18px 16px 40px; }
+    .grid { display: grid; grid-template-columns: 280px 1fr; gap: 16px; }
+    @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .card h2 { margin: 0; padding: 12px 14px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--muted); }
+    .list { max-height: 70vh; overflow: auto; padding: 6px; }
+    .item {
+      display: block; padding: 10px 10px; border-radius: 10px; text-decoration: none; color: var(--text);
+      border: 1px solid transparent;
+    }
+    .item:hover { background: rgba(122,162,255,0.08); border-color: rgba(122,162,255,0.18); }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); margin-left: 8px; }
+    .detail { padding: 16px; }
+    .sig { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; color: var(--muted); }
+    .name { margin: 8px 0 6px; font-size: 18px; }
+    .section { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); }
+    .section h3 { margin: 0 0 8px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .kv { margin: 0; }
+    .kv dt { font-weight: 600; margin-top: 8px; }
+    .kv dd { margin: 4px 0 0 0; color: var(--text); }
+    a { color: var(--link); }
+    pre { background: #0a0f18; border: 1px solid var(--border); border-radius: 12px; padding: 12px; overflow: auto; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .muted { color: var(--muted); }
+    .empty { padding: 16px; color: var(--muted); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>BooseApp API Documentation</h1>
+    <div class="sub">Generated from XML documentation file (C# /// comments)</div>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Search (type name, class, method, etc.)…" />
+      <button id="reload" type="button">Reload</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap grid">
+    <section class="card">
+      <h2>Members</h2>
+      <div id="list" class="list"><div class="empty">Loading…</div></div>
+    </section>
+
+    <section class="card">
+      <h2>Details</h2>
+      <div id="detail" class="detail"><div class="empty">Select a member on the left.</div></div>
+    </section>
+  </div>
+</main>
+
+<script>
+  // Put your XML next to this file in /docs
+  const XML_PATH = './BooseApp.xml';
+
+  const listEl = document.getElementById('list');
+  const detailEl = document.getElementById('detail');
+  const qEl = document.getElementById('q');
+  const reloadBtn = document.getElementById('reload');
+
+  let members = [];
+
+  function classify(nameAttr) {
+    // nameAttr examples:
+    // T:BooseApp.AppArray
+    // M:BooseApp.AppArray.SetCell(System.Int32,System.Int32,System.String)
+    // P:BooseApp.AppArray.Rows
+    // F:BooseApp.AppArray.rows
+    const prefix = nameAttr?.split(':')[0] || '';
+    switch (prefix) {
+      case 'T': return 'Type';
+      case 'M': return 'Method';
+      case 'P': return 'Property';
+      case 'F': return 'Field';
+      case 'E': return 'Event';
+      default: return 'Member';
+    }
+  }
+
+  function simpleDisplayName(nameAttr) {
+    // Remove prefix "T:" etc.
+    const raw = (nameAttr || '').replace(/^[A-Z]:/, '');
+    return raw;
+  }
+
+  function shortTitle(nameAttr) {
+    const raw = simpleDisplayName(nameAttr);
+    // Show just the last segment (Class/Member) but keep method signature hint
+    const lastDot = raw.lastIndexOf('.');
+    return lastDot >= 0 ? raw.slice(lastDot + 1) : raw;
+  }
+
+  function nodeText(el) {
+    if (!el) return '';
+    // get text including inline nodes, then post-process
+    return renderInline(el);
+  }
+
+  function renderInline(el) {
+    // Convert common XML doc tags to HTML
+    // Allowed subset: <see>, <c>, <code>, <para>, text nodes
+    const parts = [];
+    for (const n of el.childNodes) {
+      if (n.nodeType === Node.TEXT_NODE) {
+        parts.push(escapeHtml(n.nodeValue));
+      } else if (n.nodeType === Node.ELEMENT_NODE) {
+        const tag = n.tagName.toLowerCase();
+        if (tag === 'see') {
+          const cref = n.getAttribute('cref') || '';
+          const label = cref.replace(/^[A-Z]:/, '');
+          parts.push(`<span class="muted">${escapeHtml(label)}</span>`);
+        } else if (tag === 'c') {
+          parts.push(`<code>${escapeHtml(n.textContent)}</code>`);
+        } else if (tag === 'code') {
+          parts.push(`<pre><code>${escapeHtml(n.textContent)}</code></pre>`);
+        } else if (tag === 'para') {
+          parts.push(`<div style="margin-top:8px">${renderInline(n)}</div>`);
+        } else {
+          // Unknown tag: fallback to textContent
+          parts.push(escapeHtml(n.textContent));
+        }
+      }
+    }
+    return parts.join('');
+  }
+
+  function escapeHtml(s) {
+    return (s ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function renderList(items) {
+    if (!items.length) {
+      listEl.innerHTML = `<div class="empty">No matches.</div>`;
+      return;
+    }
+    listEl.innerHTML = items.map((m, i) => {
+      const type = classify(m.nameAttr);
+      const title = shortTitle(m.nameAttr);
+      const full = simpleDisplayName(m.nameAttr);
+      return `
+        <a class="item" href="#m-${encodeURIComponent(m.nameAttr)}" data-idx="${i}">
+          <div><strong>${escapeHtml(title)}</strong><span class="badge">${escapeHtml(type)}</span></div>
+          <div class="muted" style="margin-top:4px; font-size:12px;">${escapeHtml(full)}</div>
+        </a>
+      `;
+    }).join('');
+
+    // attach click handlers
+    for (const a of listEl.querySelectorAll('a.item')) {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const idx = Number(a.getAttribute('data-idx'));
+        showDetail(items[idx]);
+      });
+    }
+  }
+
+  function renderParams(memberEl) {
+    const params = [...memberEl.getElementsByTagName('param')];
+    if (!params.length) return '';
+    const rows = params.map(p => {
+      const name = p.getAttribute('name') || '';
+      const desc = renderInline(p);
+      return `<dt>${escapeHtml(name)}</dt><dd>${desc || '<span class="muted">—</span>'}</dd>`;
+    }).join('');
+    return `<div class="section"><h3>Parameters</h3><dl class="kv">${rows}</dl></div>`;
+  }
+
+  function renderReturns(memberEl) {
+    const ret = memberEl.getElementsByTagName('returns')[0];
+    if (!ret) return '';
+    return `<div class="section"><h3>Returns</h3><div>${renderInline(ret) || '<span class="muted">—</span>'}</div></div>`;
+  }
+
+  function renderExceptions(memberEl) {
+    const ex = [...memberEl.getElementsByTagName('exception')];
+    if (!ex.length) return '';
+    const rows = ex.map(x => {
+      const cref = (x.getAttribute('cref') || '').replace(/^[A-Z]:/, '');
+      const desc = renderInline(x);
+      return `<dt>${escapeHtml(cref || 'Exception')}</dt><dd>${desc || '<span class="muted">—</span>'}</dd>`;
+    }).join('');
+    return `<div class="section"><h3>Exceptions</h3><dl class="kv">${rows}</dl></div>`;
+  }
+
+  function showDetail(m) {
+    const type = classify(m.nameAttr);
+    const full = simpleDisplayName(m.nameAttr);
+
+    const summaryEl = m.memberEl.getElementsByTagName('summary')[0];
+    const remarksEl = m.memberEl.getElementsByTagName('remarks')[0];
+
+    const summary = summaryEl ? renderInline(summaryEl) : '';
+    const remarks = remarksEl ? renderInline(remarksEl) : '';
+
+    detailEl.innerHTML = `
+      <div class="sig">${escapeHtml(type)}</div>
+      <div class="name">${escapeHtml(full)}</div>
+
+      <div class="section">
+        <h3>Summary</h3>
+        <div>${summary || '<span class="muted">No summary provided.</span>'}</div>
+      </div>
+
+      ${remarks ? `
+        <div class="section">
+          <h3>Remarks</h3>
+          <div>${remarks}</div>
+        </div>
+      ` : ''}
+
+      ${renderParams(m.memberEl)}
+      ${renderReturns(m.memberEl)}
+      ${renderExceptions(m.memberEl)}
+    `;
+  }
+
+  function applyFilter() {
+    const term = qEl.value.trim().toLowerCase();
+    if (!term) { renderList(members); return; }
+    const filtered = members.filter(m => {
+      const full = simpleDisplayName(m.nameAttr).toLowerCase();
+      const sum = (m.memberEl.getElementsByTagName('summary')[0]?.textContent || '').toLowerCase();
+      return full.includes(term) || sum.includes(term);
+    });
+    renderList(filtered);
+  }
+
+  async function loadXml() {
+    listEl.innerHTML = `<div class="empty">Loading…</div>`;
+    detailEl.innerHTML = `<div class="empty">Select a member on the left.</div>`;
+
+    const res = await fetch(XML_PATH, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`Failed to load XML: ${res.status} ${res.statusText}`);
+
+    const xmlText = await res.text();
+    const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+
+    const err = xml.querySelector('parsererror');
+    if (err) throw new Error('XML parse error. Ensure the file is valid XML.');
+
+    const assemblyName = xml.querySelector('doc > assembly > name')?.textContent?.trim() || 'Assembly';
+    document.title = `${assemblyName} API Documentation`;
+    document.querySelector('h1').textContent = `${assemblyName} API Documentation`;
+
+    const memberNodes = [...xml.getElementsByTagName('member')];
+    members = memberNodes.map(node => ({
+      nameAttr: node.getAttribute('name') || '',
+      memberEl: node
+    }))
+    .filter(m => m.nameAttr)
+    .sort((a,b) => a.nameAttr.localeCompare(b.nameAttr));
+
+    renderList(members);
+  }
+
+  qEl.addEventListener('input', applyFilter);
+  reloadBtn.addEventListener('click', loadXml);
+
+  loadXml().catch(err => {
+    listEl.innerHTML = `<div class="empty">Error: ${escapeHtml(err.message)}</div>`;
+  });
+</script>
+</body>
+</html>

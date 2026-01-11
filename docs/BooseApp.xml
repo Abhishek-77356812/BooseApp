@@ -1,0 +1,923 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BooseApp</name>
+    </assembly>
+    <members>
+        <member name="T:BooseApp.AppArray">
+            <summary>
+            Represents an internal array utility for the BOOSE interpreter.
+            Supports integer and real (double) two-dimensional arrays.
+            </summary>
+            <remarks>
+            This class extends <see cref="T:BOOSE.Evaluation"/> and integrates with
+            <see cref="T:BOOSE.StoredProgram"/> to allow array declaration, storage,
+            and retrieval within BOOSE programs.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppArray.elementType">
+            <summary>
+            The element type of the array ("int" or "real").
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppArray.rows">
+            <summary>
+            Number of rows in the array.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppArray.cols">
+            <summary>
+            Number of columns in the array.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppArray.intArray">
+            <summary>
+            Internal storage for integer arrays.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppArray.realArray">
+            <summary>
+            Internal storage for real (double) arrays.
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppArray.ElementType">
+            <summary>
+            Gets the element type of the array.
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppArray.Rows">
+            <summary>
+            Gets the number of rows in the array.
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppArray.Cols">
+            <summary>
+            Gets the number of columns in the array.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppArray.Compile">
+            <summary>
+            Compiles the array declaration from the BOOSE source code.
+            Parses the array type, name, and dimensions, then allocates
+            the appropriate storage.
+            </summary>
+            <exception cref="T:BOOSE.CommandException">
+            Thrown when parameters are missing, invalid, or the program
+            context is not available.
+            </exception>
+        </member>
+        <member name="M:BooseApp.AppArray.Execute">
+            <summary>
+            Executes the array command.
+            </summary>
+            <remarks>
+            Array execution has no runtime behaviour;
+            all work is done during compilation.
+            </remarks>
+        </member>
+        <member name="M:BooseApp.AppArray.SetCell(System.Int32,System.Int32,System.String)">
+            <summary>
+            Sets the value of a specific array cell.
+            </summary>
+            <param name="row">Row index.</param>
+            <param name="col">Column index.</param>
+            <param name="valueExpression">Expression used to calculate the value.</param>
+            <exception cref="T:BOOSE.CommandException">
+            Thrown if indices are out of range or the array is not initialised.
+            </exception>
+        </member>
+        <member name="M:BooseApp.AppArray.GetCell(System.Int32,System.Int32)">
+            <summary>
+            Retrieves the value stored at a specific array cell.
+            </summary>
+            <param name="row">Row index.</param>
+            <param name="col">Column index.</param>
+            <returns>
+            The value as a string using invariant culture formatting.
+            </returns>
+            <exception cref="T:BOOSE.CommandException">
+            Thrown if indices are out of range or the array is not initialised.
+            </exception>
+        </member>
+        <member name="M:BooseApp.AppArray.ValidateIndex(System.Int32,System.Int32)">
+            <summary>
+            Validates that the specified row and column indices
+            are within the bounds of the array.
+            </summary>
+            <param name="row">Row index to validate.</param>
+            <param name="col">Column index to validate.</param>
+            <exception cref="T:BOOSE.CommandException">
+            Thrown when an index is outside the valid range.
+            </exception>
+        </member>
+        <member name="T:BooseApp.AppBoolean">
+            <summary>
+            Represents a boolean variable command in the BOOSE interpreter.
+            </summary>
+            <remarks>
+            This class supports declaration, assignment, and evaluation of
+            boolean variables. Boolean values are internally mapped to
+            integer values (true = 1, false = 0) for compatibility with
+            the BOOSE evaluation system.
+            </remarks>
+        </member>
+        <member name="P:BooseApp.AppBoolean.BoolValue">
+            <summary>
+            Gets or sets the boolean value of the variable.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppBoolean.Compile">
+            <summary>
+            Compiles the boolean declaration and registers the variable
+            with the current <see cref="T:BOOSE.StoredProgram"/>.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppBoolean.Execute">
+            <summary>
+            Executes the boolean assignment by evaluating the expression
+            and updating the variable value at runtime.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppCircle">
+            <summary>
+            Implements the BOOSE <c>circle</c> command for drawing a circle
+            on the canvas using the current cursor position.
+            </summary>
+            <remarks>
+            The <c>circle</c> command accepts one parameter representing
+            the radius of the circle. The circle is drawn as an outline
+            using the active pen.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppCircle._canvas">
+            <summary>
+            Reference to the canvas used for drawing operations.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppCircle.#ctor(BooseApp.MyCanvas)">
+            <summary>
+            Creates a new instance of the <see cref="T:BooseApp.AppCircle"/> command.
+            </summary>
+            <param name="c">Canvas used for drawing.</param>
+        </member>
+        <member name="M:BooseApp.AppCircle.Execute">
+            <summary>
+            Executes the circle drawing command.
+            Parses the radius parameter and draws the circle
+            on the canvas.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppDrawTo">
+            <summary>
+            Implements the BOOSE <c>drawto</c> command for drawing a line
+            from the current cursor position to a specified point.
+            </summary>
+            <remarks>
+            The <c>drawto</c> command accepts two parameters representing
+            the target X and Y coordinates. A line is drawn from the
+            current position to the specified point.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppDrawTo._canvas">
+            <summary>
+            Reference to the canvas used for drawing operations.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppDrawTo.#ctor(BooseApp.MyCanvas)">
+            <summary>
+            Creates a new instance of the <see cref="T:BooseApp.AppDrawTo"/> command.
+            </summary>
+            <param name="c">Canvas used for drawing.</param>
+        </member>
+        <member name="M:BooseApp.AppDrawTo.Execute">
+            <summary>
+            Executes the draw-to command.
+            Parses X and Y parameters and draws a line
+            on the canvas.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppElse">
+            <summary>
+            Implements the BOOSE <c>else</c> conditional command.
+            </summary>
+            <remarks>
+            The <c>else</c> command is used in conjunction with an <c>if</c> command.
+            It executes when the corresponding <c>if</c> condition evaluates to false
+            and redirects program control flow accordingly.
+            </remarks>
+        </member>
+        <member name="M:BooseApp.AppElse.Compile">
+            <summary>
+            Compiles the else command by linking it to the corresponding
+            <c>if</c> command and updating control flow boundaries.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppElse.Execute">
+            <summary>
+            Executes the else command by skipping execution
+            to the end of the conditional block.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppEnd">
+            <summary>
+            Implements the BOOSE <c>end</c> command used to terminate
+            conditional and loop blocks.
+            </summary>
+            <remarks>
+            The <c>end</c> command is used to close <c>if</c>, <c>while</c>,
+            and <c>for</c> blocks. It ensures correct control-flow matching
+            between opening and closing commands.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppEnd.endType">
+            <summary>
+            Stores the type of block being closed (if, while, or for).
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppEnd.Compile">
+            <summary>
+            Compiles the end command by matching it with the corresponding
+            opening command and updating program flow metadata.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppEnd.Execute">
+            <summary>
+            Executes the end command by redirecting control flow
+            based on the type of block being closed.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppFor">
+            <summary>
+            Implements the BOOSE <c>for</c> loop command.
+            </summary>
+            <remarks>
+            The <c>for</c> command iterates a loop control variable (LCV)
+            from a starting value to an end value, optionally using a step value.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppFor.ForRegex">
+            <summary>
+            Regular expression used to parse the for-loop signature.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.lcvName">
+            <summary>
+            Loop control variable name.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.fromExp">
+            <summary>
+            Expression representing the starting value.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.toExp">
+            <summary>
+            Expression representing the terminating value.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.stepExp">
+            <summary>
+            Expression representing the step value.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.initialised">
+            <summary>
+            Indicates whether the loop has been initialised.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.current">
+            <summary>
+            Current value of the loop control variable.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.to">
+            <summary>
+            Final value of the loop.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppFor.step">
+            <summary>
+            Step value for the loop.
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppFor.LcvName">
+            <summary>
+            Gets the loop control variable name.
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppFor.Current">
+            <summary>
+            Gets the current value of the loop.
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppFor.To">
+            <summary>
+            Gets the terminating value of the loop.
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppFor.Step">
+            <summary>
+            Gets the step value of the loop.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppFor.Compile">
+            <summary>
+            Compiles the for loop by parsing its signature
+            and pushing it onto the program stack.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppFor.Execute">
+            <summary>
+            Executes the for loop condition and updates the loop control variable.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppFor.Advance(BOOSE.StoredProgram)">
+            <summary>
+            Advances the loop control variable to the next iteration.
+            </summary>
+            <param name="program">The current stored program.</param>
+            <returns>
+            True if the loop should continue executing; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:BooseApp.AppFor.ParseSignature(System.String)">
+            <summary>
+            Parses the for-loop signature to extract loop variables
+            and range expressions.
+            </summary>
+            <param name="sig">The raw for-loop signature.</param>
+        </member>
+        <member name="T:BooseApp.AppIf">
+            <summary>
+            Implements the BOOSE <c>if</c> conditional command.
+            </summary>
+            <remarks>
+            The <c>if</c> command evaluates a boolean expression and
+            conditionally executes a block of code when the expression
+            evaluates to true.
+            </remarks>
+        </member>
+        <member name="M:BooseApp.AppIf.Compile">
+            <summary>
+            Compiles the if command by registering its condition
+            and pushing it onto the program stack.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppIf.Execute">
+            <summary>
+            Executes the if command by evaluating the condition.
+            If the condition evaluates to false, execution jumps
+            to the end of the conditional block.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppInt">
+            <summary>
+            Represents an integer variable command within the BOOSE interpreter.
+            </summary>
+            <remarks>
+            This class supports integer variable declaration, initialisation,
+            assignment, and expression-based evaluation at runtime.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppInt.extraDeclared">
+            <summary>
+            Stores additional variable names declared in a single statement
+            (e.g., <c>int a, b, c</c>).
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppInt.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:BooseApp.AppInt"/> class.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppInt.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new integer variable with a literal integer value.
+            </summary>
+            <param name="name">The variable name.</param>
+            <param name="initialValue">The initial integer value.</param>
+        </member>
+        <member name="M:BooseApp.AppInt.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new integer variable using a string-based value.
+            </summary>
+            <param name="name">The variable name.</param>
+            <param name="initialValue">The initial value expression.</param>
+        </member>
+        <member name="M:BooseApp.AppInt.Compile">
+            <summary>
+            Compiles the integer declaration and registers the variable
+            with the current <see cref="T:BOOSE.StoredProgram"/>.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppInt.Execute">
+            <summary>
+            Executes the integer assignment by evaluating the expression
+            and updating the variable value at runtime.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppInt.ParseAndDeclare(System.String)">
+            <summary>
+            Parses an integer declaration and extracts variable names
+            and assignment expressions.
+            </summary>
+            <param name="text">The raw declaration text.</param>
+        </member>
+        <member name="M:BooseApp.AppInt.ParseToInt(System.String)">
+            <summary>
+            Converts a raw string expression into an integer value.
+            </summary>
+            <param name="raw">The raw string value.</param>
+            <returns>An integer representation of the value.</returns>
+        </member>
+        <member name="M:BooseApp.AppInt.NormaliseName(System.String)">
+            <summary>
+            Normalizes a variable name by removing type keywords
+            and whitespace.
+            </summary>
+            <param name="raw">The raw variable name.</param>
+            <returns>The normalized variable name.</returns>
+        </member>
+        <member name="T:BooseApp.AppMoveTo">
+            <summary>
+            Implements the BOOSE <c>moveto</c> command for moving the drawing cursor
+            to a specified position without drawing.
+            </summary>
+            <remarks>
+            The <c>moveto</c> command accepts two parameters representing
+            the X and Y coordinates. The canvas cursor is moved to the
+            specified location without drawing a line.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppMoveTo._canvas">
+            <summary>
+            Reference to the canvas used for drawing operations.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppMoveTo.#ctor(BooseApp.MyCanvas)">
+            <summary>
+            Creates a new instance of the <see cref="T:BooseApp.AppMoveTo"/> command.
+            </summary>
+            <param name="c">Canvas used for cursor movement.</param>
+        </member>
+        <member name="M:BooseApp.AppMoveTo.Execute">
+            <summary>
+            Executes the move-to command.
+            Parses X and Y parameters and moves the cursor
+            to the specified position without drawing.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppPeek">
+            <summary>
+            Implements the BOOSE <c>peek</c> command, allowing retrieval of a value
+            from an array at a specified row and column and storing it in a variable.
+            </summary>
+            <remarks>
+            The <c>peek</c> command supports both integer and real arrays.
+            If the target variable does not already exist, it is created automatically
+            with the appropriate type.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppPeek.targetVar">
+            <summary>
+            Name of the target variable where the retrieved value will be stored.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppPeek.arrayName">
+            <summary>
+            Name of the source array.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppPeek.rowExp">
+            <summary>
+            Expression representing the row index.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppPeek.colExp">
+            <summary>
+            Expression representing the column index.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppPeek.CheckParameters(System.String[])">
+            <summary>
+            Performs minimal parameter checking.
+            Detailed validation is handled during parsing.
+            </summary>
+            <param name="parameters">Command parameters.</param>
+        </member>
+        <member name="M:BooseApp.AppPeek.Compile">
+            <summary>
+            Compiles the command and parses its parameter list.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppPeek.Execute">
+            <summary>
+            Executes the peek operation by retrieving a value from the array
+            and assigning it to the target variable.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppPeek.Parse(System.String)">
+            <summary>
+            Parses the parameter list to extract the target variable,
+            array name, and index expressions.
+            </summary>
+            <param name="paramList">Raw parameter list string.</param>
+        </member>
+        <member name="T:BooseApp.AppPenColour">
+            <summary>
+            Implements the BOOSE <c>pencolour</c> command for changing
+            the active drawing colour on the canvas.
+            </summary>
+            <remarks>
+            The <c>pencolour</c> command accepts three parameters representing
+            the red, green, and blue (RGB) colour components.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppPenColour._canvas">
+            <summary>
+            Reference to the canvas used for drawing operations.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppPenColour.#ctor(BooseApp.MyCanvas)">
+            <summary>
+            Creates a new instance of the <see cref="T:BooseApp.AppPenColour"/> command.
+            </summary>
+            <param name="c">Canvas used for colour changes.</param>
+        </member>
+        <member name="M:BooseApp.AppPenColour.Execute">
+            <summary>
+            Executes the pen colour command.
+            Parses RGB parameters and updates the active pen colour
+            on the canvas.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppPoke">
+            <summary>
+            Implements the BOOSE <c>poke</c> command, allowing a value to be
+            written into an array at a specified row and column.
+            </summary>
+            <remarks>
+            The <c>poke</c> command updates an existing array cell.
+            The value expression is evaluated at runtime using the BOOSE
+            evaluation engine.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppPoke.arrayName">
+            <summary>
+            Name of the target array.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppPoke.rowExp">
+            <summary>
+            Expression representing the row index.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppPoke.colExp">
+            <summary>
+            Expression representing the column index.
+            </summary>
+        </member>
+        <member name="F:BooseApp.AppPoke.valueExp">
+            <summary>
+            Expression representing the value to be written to the array.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppPoke.CheckParameters(System.String[])">
+            <summary>
+            Performs minimal parameter checking.
+            Detailed validation is handled during parsing.
+            </summary>
+            <param name="parameters">Command parameters.</param>
+        </member>
+        <member name="M:BooseApp.AppPoke.Compile">
+            <summary>
+            Compiles the poke command and parses its parameter list.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppPoke.Execute">
+            <summary>
+            Executes the poke operation by writing a value
+            into the specified array cell.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppPoke.Parse(System.String)">
+            <summary>
+            Parses the parameter list to extract the array name,
+            index expressions, and value expression.
+            </summary>
+            <param name="paramList">Raw parameter list string.</param>
+        </member>
+        <member name="T:BooseApp.AppReal">
+            <summary>
+            Represents a real (double) variable command in the BOOSE interpreter.
+            </summary>
+            <remarks>
+            This class supports declaration, assignment, and runtime evaluation
+            of real-valued variables. It integrates with the BOOSE
+            <see cref="T:BOOSE.Evaluation"/> system and maintains compatibility
+            with integer-based evaluation where required.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppReal.extraDeclared">
+            <summary>
+            Stores additional variable names declared in a single statement
+            (e.g., <c>real a, b, c</c>).
+            </summary>
+        </member>
+        <member name="P:BooseApp.AppReal.Value">
+            <summary>
+            Gets or sets the real (double) value of the variable.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppReal.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:BooseApp.AppReal"/> class.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppReal.#ctor(System.String,System.Double)">
+            <summary>
+            Initializes a new real variable with a literal double value.
+            </summary>
+            <param name="name">The variable name.</param>
+            <param name="initialValue">The initial double value.</param>
+        </member>
+        <member name="M:BooseApp.AppReal.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new real variable using a string-based value expression.
+            </summary>
+            <param name="name">The variable name.</param>
+            <param name="initialValue">The initial value expression.</param>
+        </member>
+        <member name="M:BooseApp.AppReal.Compile">
+            <summary>
+            Compiles the real variable declaration and registers it
+            with the current <see cref="T:BOOSE.StoredProgram"/>.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppReal.Execute">
+            <summary>
+            Executes the real variable assignment by evaluating the expression
+            and updating the variable value at runtime.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppReal.ParseAndDeclare(System.String)">
+            <summary>
+            Parses a real variable declaration and extracts variable names
+            and assignment expressions.
+            </summary>
+            <param name="text">The raw declaration text.</param>
+        </member>
+        <member name="M:BooseApp.AppReal.ParseToDouble(System.String)">
+            <summary>
+            Converts a raw string expression into a double value.
+            </summary>
+            <param name="raw">The raw string value.</param>
+            <returns>A double representation of the value.</returns>
+        </member>
+        <member name="M:BooseApp.AppReal.NormaliseName(System.String)">
+            <summary>
+            Normalizes a variable name by removing type keywords
+            and unnecessary whitespace.
+            </summary>
+            <param name="raw">The raw variable name.</param>
+            <returns>The normalized variable name.</returns>
+        </member>
+        <member name="T:BooseApp.AppRect">
+            <summary>
+            Implements the BOOSE <c>rect</c> command for drawing a rectangle
+            on the canvas using the current cursor position.
+            </summary>
+            <remarks>
+            This command accepts two parameters representing the width
+            and height of the rectangle. The rectangle is drawn as an
+            outline (not filled).
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppRect._canvas">
+            <summary>
+            Reference to the canvas used for drawing operations.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppRect.#ctor(BooseApp.MyCanvas)">
+            <summary>
+            Initializes a new instance of the <see cref="T:BooseApp.AppRect"/> class.
+            </summary>
+            <param name="c">The canvas on which the rectangle will be drawn.</param>
+        </member>
+        <member name="M:BooseApp.AppRect.Execute">
+            <summary>
+            Executes the rectangle drawing command.
+            Parses width and height parameters and draws the rectangle
+            on the canvas.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppWhile">
+            <summary>
+            Implements the BOOSE <c>while</c> loop command.
+            </summary>
+            <remarks>
+            The <c>while</c> command repeatedly executes a block of commands
+            as long as the specified condition evaluates to true.
+            </remarks>
+        </member>
+        <member name="M:BooseApp.AppWhile.Compile">
+            <summary>
+            Compiles the while loop by registering its condition
+            and pushing it onto the program stack.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppWhile.Execute">
+            <summary>
+            Executes the while loop condition check.
+            If the condition evaluates to false, execution
+            jumps to the end of the loop.
+            </summary>
+        </member>
+        <member name="T:BooseApp.AppWrite">
+            <summary>
+            Implements the BOOSE <c>write</c> command for displaying text output
+            on the canvas.
+            </summary>
+            <remarks>
+            This command evaluates the provided expression and renders the
+            resulting text at the current cursor position on the canvas.
+            </remarks>
+        </member>
+        <member name="F:BooseApp.AppWrite.canvas">
+            <summary>
+            The canvas used to render text output.
+            </summary>
+        </member>
+        <member name="M:BooseApp.AppWrite.#ctor(BooseApp.MyCanvas)">
+            <summary>
+            Initializes a new instance of the <see cref="T:BooseApp.AppWrite"/> class.
+            </summary>
+            <param name="c">The canvas used to draw the output text.</param>
+        </member>
+        <member name="M:BooseApp.AppWrite.Execute">
+            <summary>
+            Executes the write command by evaluating the expression
+            and writing the result to the canvas.
+            </summary>
+        </member>
+        <member name="T:BooseApp.Form1">
+            <summary>
+            Main form for my BOOSE interpreter.
+            Handles running BOOSE code, validation, saving/loading,
+            and updating the canvas and debug window.
+            </summary>
+            <summary>
+            Designer partial class for Form1. Sets up controls and layout.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.components">
+            <summary>
+            Container for components.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.panel1">
+            <summary>
+            Panel for drawing canvas.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.buttonRun">
+            <summary>
+            Button to run the program.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.richTextBoxMulti">
+            <summary>
+            RichTextBox for multiline code input.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.textBoxSingle">
+            <summary>
+            TextBox for single line code input.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.textBoxDebug">
+            <summary>
+            TextBox for debug output.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.menuStrip1">
+            <summary>
+            MenuStrip for main menu.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.fileToolStripMenuItem">
+            <summary>
+            File menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.newToolStripMenuItem">
+            <summary>
+            New file menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.loadToolStripMenuItem">
+            <summary>
+            Load file menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.saveToolStripMenuItem">
+            <summary>
+            Save file menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.clearToolStripMenuItem">
+            <summary>
+            Clear file menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.checkToolStripMenuItem">
+            <summary>
+            Check file menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.exitToolStripMenuItem">
+            <summary>
+            Exit file menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.helpToolStripMenuItem">
+            <summary>
+            Help menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.aboutsToolStripMenuItem">
+            <summary>
+            About menu item.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.labelMulti">
+            <summary>
+            Label for multiline code.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.labelSingle">
+            <summary>
+            Label for single line code.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.labelOutput">
+            <summary>
+            Label for output.
+            </summary>
+        </member>
+        <member name="F:BooseApp.Form1.labelDebug">
+            <summary>
+            Label for debug.
+            </summary>
+        </member>
+        <member name="M:BooseApp.Form1.Dispose(System.Boolean)">
+            <summary>
+            Dispose resources used by the form.
+            </summary>
+            <param name="disposing">True to dispose managed resources.</param>
+        </member>
+        <member name="M:BooseApp.Form1.InitializeComponent">
+            <summary>
+            Set up all controls and layout for the form.
+            </summary>
+        </member>
+        <member name="T:BooseApp.MyCanvas">
+            <summary>
+            MyCanvas: Fully working drawing engine for BOOSE Interpreter.
+            Implements the ICanvas interface from BOOSE.dll.
+            Handles drawing lines, shapes, text, and clearing the panel.
+            </summary>
+        </member>
+        <member name="M:BooseApp.MyCanvas.#ctor(System.Windows.Forms.Panel)">
+            <summary>
+            Creates MyCanvas and prepares the drawing area.
+            </summary>
+        </member>
+        <member name="T:BooseApp.MyCommandFactory">
+            <summary>
+            Factory for BOOSE commands, mapped to our custom implementations (MyIf, MyWhile, etc).
+            Also cleans input command names to avoid invisible BOM issues (e.g. "﻿if").
+            </summary>
+        </member>
+        <member name="M:BooseApp.Program.Main">
+            <summary>
+             The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:BooseApp.ApplicationConfiguration">
+            <summary>
+             Bootstrap the application configuration.
+            </summary>
+        </member>
+        <member name="M:BooseApp.ApplicationConfiguration.Initialize">
+            <summary>
+             Bootstrap the application as follows:
+             <code>
+             global::System.Windows.Forms.Application.EnableVisualStyles();
+             global::System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+             global::System.Windows.Forms.Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            </code>
+            </summary>
+        </member>
+    </members>
+</doc>
